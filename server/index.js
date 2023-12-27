@@ -44,21 +44,22 @@ io.on("connection", async (socket) => {
   });
 
   // Para cuando alguien envia un mensaje.
-  socket.on("chat message", async (msg) => {
-    let result;
-    const username = socket.handshake.auth.username ?? 'anonymous';
-    console.log({username})
+  socket.on('chat message', async (msg) => {
+    let result
+    const username = socket.handshake.auth.username ?? 'anonymous'
+    console.log({ username })
     try {
       result = await db.execute({
-        sql: `INSERT INTO messages (content,user) VALUES (:msg,:username)`,
-        args: {  msg, username },
-      });
-    } catch (error) {
-      console.error(error);
-      return;
+        sql: 'INSERT INTO messages (content, user) VALUES (:msg, :username)',
+        args: { msg, username }
+      })
+    } catch (e) {
+      console.error(e)
+      return
     }
-    io.emit("chat message", msg, result.lastInsertRowid.toString());
-  });
+
+    io.emit('chat message', msg, result.lastInsertRowid.toString(), username)
+  })
 
   // Para cuando alguien se conecta y recupera los mensajes.
   if (!socket.recovered) {
