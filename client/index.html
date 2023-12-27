@@ -6,19 +6,23 @@
     <title>Document</title>
 
     <script type="module">
-
-
       import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
-      const socket = io();
+      const socket = io({
+        auth: {
+          username: await getUsername(),
+          serverOffset: 0,
+        },
+      });
 
       const form = document.getElementById("form");
       const input = document.getElementById("input");
       const messages = document.getElementById("messages");
 
       socket.on("chat message", (msg) => {
-       const item = `<li>${msg}</li>`
+        const item = `<li>${msg}</li>`;
         messages.insertAdjacentHTML("beforeend", item);
+        socket.auth.serverOffset = serverOffset;
       });
 
       form.addEventListener("submit", (e) => {
@@ -28,8 +32,6 @@
           input.value = "";
         }
       });
-
-
     </script>
 
     <style>
@@ -55,17 +57,17 @@
         grid-template-rows: 1fr;
       }
 
-      #messages{
+      #messages {
         list-style: none;
         margin: 0;
         padding: 0;
       }
 
       #messages > li {
-        padding: .5rem 1rem;
+        padding: 0.5rem 1rem;
       }
 
-      #messages>li:nth-child(odd){
+      #messages > li:nth-child(odd) {
         background: #000;
       }
 
@@ -113,7 +115,7 @@
     <section id="chat">
       <ul id="messages"></ul>
       <form id="form">
-        <input id="input"  placeholder="Escribe un mensaje"/>
+        <input id="input" placeholder="Escribe un mensaje" />
         <button>Send</button>
       </form>
     </section>
